@@ -28,10 +28,10 @@ del types
 
 _exc_info = sys.exc_info
 
-try:
+if os.name == "posix":
 	_uname	= os.uname
-except:
-	_uname = lambda:"(undefined)"
+else:
+	_uname = os.name
 del os
 
 _StringLower = string.lower
@@ -48,12 +48,11 @@ _currentThread = threading.currentThread
 del threading
 
 #Global variables definition
-PYCRASH_VERSION 	= "0.2.1"
+PYCRASH_VERSION 		= "0.4-pre1"
 PYCRASH_STRINGS_INFO 	= ['AppName', "Version", "SendTo"]
-PYCRASH_REFERENCE 	= None
+PYCRASH_REFERENCE 		= None
 
-
-class PyCrash:
+class PyCrash(object):
 
 	__initialized = 0 #initialization flag
 	
@@ -71,13 +70,19 @@ class PyCrash:
 			return 
 		
 		self.__appCrashed = 0
+		self.__numberOfExceptions = 0 #This is used to count the number of 
+		 			 			      #uncaught exceptions raised
 		self.__tbList = [] #List of ExceptionThraceback objects
-		self.__time = [str(_localtime(_time())), None] #[0]=application started, [1]=application crashed
+		self.__time = [str(_localtime(_time())), None] #[0]=application started, [1]=exception raised
 		self.__customRecords = []
 
-		#Hooks need for catch raised exception and application exit
-		sys.excepthook = self.__exceptHook
-		_atexit_register(self.__exit)
+		#PyCrash works well only with Python 2.3 or later. So, before we
+		#set appropriate hooks, we check that this is the right version: if no,
+		#simply no hooks are set to avoid abnormal terminations of the program
+		if sys.version_info[0] >= 2 and sys.version_info[1] >= 3:
+			#Hooks need for catch raised exception and application exit
+			sys.excepthook = self.__exceptHook
+			_atexit_register(self.__exit)
 		
 		for attr in PYCRASH_STRINGS_INFO: #Adding additional info
 			try:
@@ -92,6 +97,8 @@ class PyCrash:
 		PYCRASH_REFERENCE = self
 	
 	def __exceptHook(self, type, value, tb):
+		assert self.__initialized, "PyCrash.__init__() not called"
+		
 		#Ok. Something is wrong and let's build the crush dump
 		
 		#This method is called each time an exception isn't caught. So
@@ -103,13 +110,46 @@ class PyCrash:
 		#We fetch the reference to current thread to take its name
 		t = _currentThread()
 		self.__mkCrashDump(t.getName(), (type, value, tb))
+		self.__numberOfExceptions += 1
+		self.onExceptionRaised(self.__numberOfExceptions)
 
 	def __exit(self): 
+		assert self.__initialized, "PyCrash.__init__() not called"
+		
 		try:
 			self.onExit()	
 		except Exception, msg:
 			print Exception, msg
 
+	def __getAppInfo(self):
+		assert self.__initialized, "PyCrash.__init__() not called"
+		
+		strInfo = " appname=\"" + self._AppName + "\" appversion=\"" +  self._Version + "\"" 
+		strInfo += " started=\"" + self.__time[0] + "\" crashed=\"" + self.__time[1] + "\""
+		return strInfo
+
+	def __getCustomRecords(self):
+		assert self.__initialized, "PyCrash.__init__() not called"
+		
+		strInfo = ""
+		for elem in self.__customRecords:
+			strInfo += "\t<customrecord>" + elem + "</customrecord>\n"
+
+		return strInfo
+
+	def __getOSInfo(self):
+		assert self.__initialized, "PyCrash.__init__() not called"
+		
+		strInfo = " osinfo=\"" + str(_uname()) + "\""
+		return strInfo
+	
+	def __getPythonInfo(self):
+		assert self.__initialized, "PyCrash.__init__() not called"
+		
+		strInfo = " pyversion=\"" + str(sys.version_info) + "\""
+		strInfo += " pyapiversion=\"" + str(sys.api_version) + "\""
+		return strInfo
+		
 	def __mkCrashDump(self, thread, excInfo):
 		#This is the routine which builds up the crash dump 
 		assert self.__initialized, "PyCrash.__init__() not called"
@@ -122,6 +162,8 @@ class PyCrash:
 		self.__customRecords.append(record)
 	
 	def printErrorMessage(self, exception, message):
+		assert self.__initialized, "PyCrash.__init__() not called"
+		
 		#TODO: this function should print something of more useful
 		print exception, message
 	
@@ -137,14 +179,24 @@ Please send it to """ + self._SendTo
 		return strInfo
 	
 	def getCrashDump(self):
+		assert self.__initialized, "PyCrash.__init__() not called"
+		
 		if self.__appCrashed:
 			return self.toXML()
+		return None
 
 	def getFileName(self):
+		assert self.__initialized, "PyCrash.__init__() not called"
+		
 		try:
 			return self.__fileName
 		except:
 			return None
+
+	def getNumberOfRaisedExceptions(self):
+		assert self.__initialized, "PyCrash.__init__() not called"
+		
+		return self.__numberOfExceptions
 
 	def isCrashed(self):
 		""" Returns 1 (true) if the application has been crashed, 
@@ -152,7 +204,7 @@ Please send it to """ + self._SendTo
 		assert self.__initialized, "PyCrash.__init__() not called"
 		
 		return self.__appCrashed
-	
+
 	def onBegin(self):
 		""" User's defined actions: derived classes can override this
 		    method to add custom actions. This method is called at the 
@@ -165,6 +217,13 @@ Please send it to """ + self._SendTo
 		    of crash dump construction """
 		pass #User-defined actions
 	
+	def onExceptionRaised(self, time):
+		""" User's defined actions: derived classes can override this
+		    method to add custom actions. This method is called every  
+		    time an uncaught exception is raised: "time" reports the number
+		    of uncaught exceptions raised """
+		pass #User-defined actions
+
 	def onExit(self):
 		""" User's defined actions: derived classes can override this
 		    method to add custom actions. This method is called at the exit 
@@ -173,38 +232,16 @@ Please send it to """ + self._SendTo
 	
 	def saveToFile(self, filename):
 		""" Save the crash dump file in a given 'filename' directory """
+		assert self.__initialized, "PyCrash.__init__() not called"
+		
 		
 		self.__fileName = filename
 		
 		if self.__appCrashed:
-			assert self.__initialized, "PyCrash.__init__() not called"
-			assert self.__appCrashed, "The application is not crashed"
-		
 			fd = open(filename, "w")
 			fd.write(self.getCrashDump())
 			fd.close()
 
-	def __getAppInfo(self):
-		strInfo = " appname=\"" + self._AppName + "\" appversion=\"" +  self._Version + "\"" 
-		strInfo += " started=\"" + self.__time[0] + "\" crashed=\"" + self.__time[1] + "\""
-		return strInfo
-
-	def __getCustomRecords(self):
-		strInfo = ""
-		for elem in self.__customRecords:
-			strInfo += "\t<customrecord>" + elem + "</customrecord>\n"
-
-		return strInfo
-
-	def __getOSInfo(self):
-		strInfo = " osinfo=\"" + str(_uname()) + "\""
-		return strInfo
-	
-	def __getPythonInfo(self):
-		strInfo = " pyversion=\"" + str(sys.version_info) + "\""
-		strInfo += " pyapiversion=\"" + str(sys.api_version) + "\""
-		return strInfo
-		
 	def toXML(self):
 		""" Returns the XML rapresentation of the crash dump """
 		assert self.__initialized, "PyCrash.__init__() not called"

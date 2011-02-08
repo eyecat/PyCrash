@@ -1,0 +1,5 @@
+Version 0.4-pre1:
+	* Added full support to new-style classes
+	* Added new pycrash.utils.Encrypt.py module which allows to encrypt crash dumps using RSA algorithm.
+	* Added keygen.py and decrypt.py utils which allow to generate a public/private pair keys and
+	  decrypt encrypted crash dumps by EncryptedPyCrash module 

@@ -21,14 +21,25 @@
 
 #!/usr/bin/python
 
-#A simple and very stupid test for PyCrash Module
+#A simple and very stupid test for EncryptedPyCrash and PyCrash module
 
 from pycrash import *
+from pycrash.utils.Encrypt import EncryptedPyCrash
 from thread import *
+import sys
 
-class MyCrash(PyCrash):
+class MyEncryptedCrash(EncryptedPyCrash):
+	def encryptingProgress(self, percentage):
+		print "Encrypting...  \x1b[1;31m%d%%\x1b[0m\r" % percentage, 
+		sys.stdout.flush()
+
 	def onExit(self):
-		self.saveToFile("./test.pycrash")
+		try:
+			self.setPubKeyFilename("./key.pub")
+		except:
+			print "Run keygen.py before to use this program"
+		else:
+			self.saveToFile("./test.pycrash.encrypted")
 
 class Foo:
 	def __init__(self):
@@ -36,7 +47,7 @@ class Foo:
 		self.__str = "Hello"
 		self.__instance = self
 
-	def pro(self):
+	def aFooMethod(self):
 		pass
 
 def bad_func(a):
@@ -48,18 +59,17 @@ def bad_func(a):
 		prova = a/0 #Error
 
 if __name__ == '__main__':
-	print "Testing PyCrash..."
-	p = MyCrash({'AppName': 'Test', 'Version':'0.4pre1', 'SendTo': 'Carmine I.D. Noviello <cnoviello@pycrash.org>'})
-	
-	start_new_thread(bad_func, (11,))
-	start_new_thread(bad_func, (100,))
+	print "Testing EncryptedPyCrash..."
+	p = MyEncryptedCrash({'AppName': 'Test-Encrypted', 'Version':'0.4pre1', 'SendTo': 'Carmine I.D. Noviello <cnoviello@pycrash.org>'})
+	start_new_thread(bad_func, (10,))
+	start_new_thread(bad_func, (10,))
 
 	func_ref = bad_func
 
-	bad_func(2)
+	func_ref(2)
 
 	try:
 		while 1:
 			pass
 	except KeyboardInterrupt:
-		print "bye"
+		print "-Bye"

@@ -19,47 +19,4 @@
 # Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 # Boston, MA 02111-1307, USA.
 
-#!/usr/bin/python
-
-#A simple and very stupid test for PyCrash Module
-
-from pycrash import *
-from thread import *
-
-class MyCrash(PyCrash):
-	def onExit(self):
-		self.saveToFile("./test.pycrash")
-
-class Foo:
-	def __init__(self):
-		self.__int = 10
-		self.__str = "Hello"
-		self.__instance = self
-
-	def pro(self):
-		pass
-
-def bad_func(a):
-	f = Foo()
-	
-	if a > 0:
-		bad_func(a-1)
-	else:
-		prova = a/0 #Error
-
-if __name__ == '__main__':
-	print "Testing PyCrash..."
-	p = MyCrash({'AppName': 'Test', 'Version':'0.4pre1', 'SendTo': 'Carmine I.D. Noviello <cnoviello@pycrash.org>'})
-	
-	start_new_thread(bad_func, (11,))
-	start_new_thread(bad_func, (100,))
-
-	func_ref = bad_func
-
-	bad_func(2)
-
-	try:
-		while 1:
-			pass
-	except KeyboardInterrupt:
-		print "bye"
+from Encrypt import *

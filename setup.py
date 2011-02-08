@@ -24,10 +24,11 @@
 from distutils.core import setup
 
 setup(  name="PyCrash",
-      	version="0.2",
-	description="PyCrash: a Run-Time Exception Dumper for Python programs",
-	author="Carmine I.D. Noviello",
-	author_email="cnoviello@programmers.net",
-	url="http://www.pycrash.org",
-	packages=['pycrash'],
+      	version="0.4-pre1",
+		description="PyCrash: a Run-Time Exception Dumper for Python programs",
+		author="Carmine I.D. Noviello",
+		author_email="cnoviello@pycrash.org",
+		url="http://www.pycrash.org",
+		packages=['pycrash', 'pycrash.utils'],
+		scripts = ['utils/keygen.py', 'utils/decrypt.py']
 )

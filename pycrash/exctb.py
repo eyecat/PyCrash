@@ -27,7 +27,7 @@ _TracebackType = types.TracebackType
 _StringType = types.StringType
 del types
 
-class ExceptionTraceBack:
+class ExceptionTraceBack(object):
 	
 	__initialized = 0
 	
@@ -35,34 +35,34 @@ class ExceptionTraceBack:
 		assert type(thread) is _StringType and len(thread) > 0, "2nd parameter must be an unique string identifier"
 		assert type(traceback) is _TupleType and type(traceback[2]) is _TracebackType, "use sys.exc_info() to retrieve 3rd parameter"
 
-		self._tb = traceback[2]
-		self._excInfo = [traceback[0], traceback[1]]
-		self._thread = thread
-		self._stack = []
+		self.__tb = traceback[2]
+		self.__excInfo = [traceback[0], traceback[1]]
+		self.__thread = thread
+		self.__stack = []
 		self.__initialized = 1
 
 		self.__parseTraceBack()
 
 	def __parseTraceBack(self):
-		tb = self._tb
+		tb = self.__tb
 
 		while tb is not None:
-			self._stack.append(StackFrame(tb.tb_frame))
+			self.__stack.append(StackFrame(tb.tb_frame))
 			tb = tb.tb_next
 
-		self._stack.reverse() #We reverse list so last called routine is
+		self.__stack.reverse() #We reverse list so last called routine is
 				      #the first one
 
 	def getStack(self):
-		return self._stack
+		return self.__stack
 
 	def toXML(self):
 		strXML = "\t<exctb thread=\""
-		strXML += str(self._thread)
-		strXML += "\" exctype=\"" + str(self._excInfo[0]) 
-		strXML += "\" value=\"" + str(self._excInfo[1]) + "\">\n"
+		strXML += str(self.__thread)
+		strXML += "\" exctype=\"" + str(self.__excInfo[0]) 
+		strXML += "\" value=\"" + str(self.__excInfo[1]) + "\">\n"
 
-		for stack in self._stack:
+		for stack in self.__stack:
 			strXML += stack.toXML()
 
 		strXML += "\t</exctb>\n"

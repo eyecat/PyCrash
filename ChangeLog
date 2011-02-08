@@ -1,0 +1,51 @@
+2004-03-01  Carmine I.D. Noviello  <cnoviello@pycrash.org>
+	* test/: added the file test-encrypted.py wich tests the new utils.Encrypt.py module
+
+2004-02-28	Carmine I.D. Noviello  <cnoviello@pycrash.org>
+	* pycrash/utils: added this sub-dir that must contain all PyCrash related utilities
+
+	* pycrash/utils/Encrypt.py: added this file which contains the new EncryptedPyCrash (and all
+						  		related classes) used to encrypt crash dumps
+	
+	* utils/: added this subdir which contains 'keygen.py' and 'decrypt.py' used to generate
+			  a public/private key pair and decrypt encrypted crash dumps
+
+2004-02-27	Carmine I.D. Noviello  <cnoviello@pycrash.org>
+	
+	* At long last, added the ChangeLog file
+
+	* pycrash/pycrash.py: full transition to new-style classes 
+	  (class PyCrash): now PyCrash inherits from "object" base class
+
+	* pycrash/stackframe.py: full transition to new-style classes 
+	  (class StackFrame): now StackFrame inherits from "object" base class
+
+	* pycrash/exctb.py: full transition to new-style classes 
+	  (class ExceptionTraceBack): now ExceptionTraceBack inherits from "object" base class
+
+	* pycrash/pycrash.py: Now all methods (except user-defined actions) make assertion on
+						  self.__initialized attribute 
+
+	* pycrash/pycrash.py: added check for Python version 
+	  (class PyCrash.__init__): added code to check if user is using the right version of 
+								Python (2.3 or later). If no, PyCrash simply doesn't set any
+								hooks, in order to avoid abnormal terminations of the program
+	
+	* pycrash/pycrash.py: added support to onExceptionRaised() method
+      (class PyCrash): added attribute __numberOfExceptions to count the number of uncaught 
+					   raised exceptions
+	  (__exceptHook): changed to call onExceptionRaised() appropriately
+	  (onExceptionRaised): new user-defined action: onExceptionRaised is called each time an
+						   uncaught exception is raised
+	  (getNumberOfRaisedExceptions): new method used to return the number of uncaught raised
+									 exceptions
+
+	* pycrash/stackframe.py: added supprto to new-style classes
+	  (class StackFrame): change to toXML() method to fully support new-style classes
+	  (toXML): added subfunction getVarType() which abstract all operations required to 
+			   fetch variable tyle and store it correctly in crash dump
+	  (toXML): added subfunction isInstance() which check if a given veriable is an onject 
+			   instance 
+	  (getVarType): some change to the regular expression
+
+
