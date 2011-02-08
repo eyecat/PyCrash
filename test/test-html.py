@@ -49,7 +49,7 @@ def bad_func(a):
 
 if __name__ == '__main__':
 	print "Testing PyCrash..."
-	p = MyCrash({'AppName': 'Test', 'Version':'0.4pre2', 'SendTo': 'Carmine I.D. Noviello (cnoviello@pycrash.org)'})
+	p = MyCrash({'AppName': 'Test', 'Version':'0.4pre3', 'SendTo': 'Carmine I.D. Noviello (cnoviello@pycrash.org)'})
 
 	p.enable() #New in PyCrash-0.4pre2
 

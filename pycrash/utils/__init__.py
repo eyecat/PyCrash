@@ -19,5 +19,8 @@
 # Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 # Boston, MA 02111-1307, USA.
 
-from Encrypt import *
+try: #It could raise an exception if the pycrypto lib is not installed
+	from Encrypt import *
+except:
+	pass
 from Html import *

@@ -24,7 +24,7 @@
 from distutils.core import setup
 
 setup(  name="PyCrash",
-      	version="0.4-pre2",
+      	version="0.4-pre3",
 		description="PyCrash: a Run-Time Exception Dumper for Python programs",
 		author="Carmine I.D. Noviello",
 		author_email="cnoviello@pycrash.org",

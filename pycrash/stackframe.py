@@ -139,7 +139,8 @@ class StackFrame(object):
 			
 			if isInstance(var): #Add all object attributes
 				attrKeys = var.__dict__.keys()
-				del attrKeys[0] #Let's skip 1st element to avoid redundant info
+				if attrKeys:
+					del attrKeys[0] #Let's skip 1st element to avoid redundant info
 				for attr in attrKeys:
 					varType = getVarType(var.__dict__[attr])
 				

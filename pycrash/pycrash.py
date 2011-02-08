@@ -31,7 +31,7 @@ _exc_info = sys.exc_info
 if os.name == "posix":
 	_uname	= os.uname
 else:
-	_uname = os.name
+	_uname = lambda: "(unknown)"
 del os
 
 _StringLower = string.lower

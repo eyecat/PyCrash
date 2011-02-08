@@ -1,3 +1,10 @@
+2004-08-21  Carmine I.D. Noviello  <cnoviello@pycrash.org>
+	* pycrash/pycrash.py: fixed a bug about the _uname() function which affected the Win32 platform
+	* pycrash/utils/Html.py: fixed a bug in the getOsInfo() method which affected the Win32 platform 
+	* pycrash/utils/__init__.py: added a try..except block to the "from Encrypt import *", because it could
+								 raise an exception if pycrypt lib is not installed
+	* pycrash/stackframe.py: fixed a bug which affected the toXML() method when the attrKeys list was empty
+
 2004-04-25  Carmine I.D. Noviello  <cnoviello@pycrash.org>
 	* pycrash/utils/Html.py: added this file that contains the new HTMLPyCrash class (and all related
 							 classes) used to generate dumps in HTML format

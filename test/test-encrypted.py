@@ -60,7 +60,7 @@ def bad_func(a):
 
 if __name__ == '__main__':
 	print "Testing EncryptedPyCrash..."
-	p = MyEncryptedCrash({'AppName': 'Test-Encrypted', 'Version':'0.4pre2', 'SendTo': 'Carmine I.D. Noviello <cnoviello@pycrash.org>'})
+	p = MyEncryptedCrash({'AppName': 'Test-Encrypted', 'Version':'0.4pre3', 'SendTo': 'Carmine I.D. Noviello <cnoviello@pycrash.org>'})
 	p.enable() #New in PyCrash-0.4pre2
 
 	start_new_thread(bad_func, (10,))

@@ -296,13 +296,14 @@ class AppData:
 		return self.__excTbList
 
 	def getOsInfo(self):
-		try: #PyCrash uses 'os.uname()' to retrieve OS info. This function is only
-		     #available for UNIX-like system. So, getOsInfo() can give the
-		     #"(undefined)" value if the crash dump coming from other OSs (eg. Windows)
+		#PyCrash uses 'os.uname()' to retrieve OS info. This function is only
+		#available for UNIX-like system. So, getOsInfo() can give the
+		#"(unknown)" value if the crash dump coming from other OSs (eg. Windows)
+		if self.__dom.getAttribute("osinfo") != "(unknown)":			
 			osinfo = eval(self.__dom.getAttribute("osinfo"))
-		except:
+		else:
 			osinfo = []
-			for i in range(4):
+			for i in range(5):
 				osinfo.append("(unknown)")
 
 		return osinfo	

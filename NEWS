@@ -1,3 +1,6 @@
+Version 0.4-pre3:
+	* many bug-fixes
+
 Version 0.4-pre2:
 	* Added forceDump() method to the PyCrash class to force creation of the crash dump
 	* Starting from this release the enable() method must be called to starting the exception tracing
