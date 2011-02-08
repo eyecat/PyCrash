@@ -1,0 +1,7 @@
+To install the PyCrash module, simply run
+
+	# python setup.py install
+
+To run the test exemple, switch to "test" directory and type testPyCrash.
+
+-Bye

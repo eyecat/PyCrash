@@ -1,0 +1,6 @@
+#!/bin/sh
+
+PYTHONPATH=../:$PYTHONPATH
+export PYTHONPATH
+
+status=exec python test.py
