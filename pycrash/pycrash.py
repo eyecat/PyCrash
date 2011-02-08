@@ -38,6 +38,7 @@ _StringLower = string.lower
 del string
 
 _atexit_register = atexit.register
+_atexit_exithandlers = atexit._exithandlers
 del atexit
 
 _time = time.time
@@ -48,13 +49,15 @@ _currentThread = threading.currentThread
 del threading
 
 #Global variables definition
-PYCRASH_VERSION 		= "0.4-pre1"
+PYCRASH_VERSION 		= "0.4-pre2"
 PYCRASH_STRINGS_INFO 	= ['AppName', "Version", "SendTo"]
 PYCRASH_REFERENCE 		= None
 
 class PyCrash(object):
 
-	__initialized = 0 #initialization flag
+	__initialized = 0  #initialization flag
+	STATUS_ENABLED = 1 #PyCrash status flags
+	STATUS_DISABLED = 0
 	
 	def __init__(self, strings):
 		assert type(strings) is _DictType, "'strings' must be a dictionary"
@@ -70,19 +73,13 @@ class PyCrash(object):
 			return 
 		
 		self.__appCrashed = 0
+		self.__status = self.STATUS_DISABLED
+		self.__oldHook = None
 		self.__numberOfExceptions = 0 #This is used to count the number of 
 		 			 			      #uncaught exceptions raised
 		self.__tbList = [] #List of ExceptionThraceback objects
 		self.__time = [str(_localtime(_time())), None] #[0]=application started, [1]=exception raised
 		self.__customRecords = []
-
-		#PyCrash works well only with Python 2.3 or later. So, before we
-		#set appropriate hooks, we check that this is the right version: if no,
-		#simply no hooks are set to avoid abnormal terminations of the program
-		if sys.version_info[0] >= 2 and sys.version_info[1] >= 3:
-			#Hooks need for catch raised exception and application exit
-			sys.excepthook = self.__exceptHook
-			_atexit_register(self.__exit)
 		
 		for attr in PYCRASH_STRINGS_INFO: #Adding additional info
 			try:
@@ -99,8 +96,10 @@ class PyCrash(object):
 	def __exceptHook(self, type, value, tb):
 		assert self.__initialized, "PyCrash.__init__() not called"
 		
+		if type is None and value is None and tb is None:
+			return
+
 		#Ok. Something is wrong and let's build the crush dump
-		
 		#This method is called each time an exception isn't caught. So
 		#we must check that this is the first time
 		if not self.__appCrashed:
@@ -160,12 +159,47 @@ class PyCrash(object):
 	def addCustomRecord(self, record):		
 		assert self.__initialized, "PyCrash.__init__() not called"
 		self.__customRecords.append(record)
-	
-	def printErrorMessage(self, exception, message):
-		assert self.__initialized, "PyCrash.__init__() not called"
+
+	def disable(self):
+		"""
+			Disable PyCrash to trace raised exceptions
+		"""
+		if self.__status == self.STATUS_ENABLED:
+			sys.excepthook = self.__oldHook
+			for elem in _atexit_exithandlers:
+				if elem[0] == self.__exit:
+					_atexit_exithandlers.remove(elem)
+
+			self.__status == self.STATUS_DISABLED
+
+	def enable(self):
+		"""
+			Enable PyCrash to trace raised exceptions
+		"""
+		if self.__status == self.STATUS_DISABLED:
+			#PyCrash works well only with Python 2.3 or later. So, before we
+			#set appropriate hooks, we must check that this is the right version: if no,
+			#no hooks are set to avoid abnormal terminations of the program
+			if sys.version_info[0] >= 2 and sys.version_info[1] >= 3:
+				#Hooks need for catch raised exception and application exit
+				self.__oldHook = sys.excepthook
+				sys.excepthook = self.__exceptHook
+				_atexit_register(self.__exit)
+				self.__status = self.STATUS_ENABLED
+			else:
+				raise Exception("PyCrash can't work with this version of Python. Please, use Python 2.3 or higher")
 		
-		#TODO: this function should print something of more useful
-		print exception, message
+
+	def forceDump(self):
+		"""forceDump() forces the creation of the crash dump, if an
+		   exception is raised. 
+		   forceDump() method can be very useful when an exception hasn't
+		   reached the top-level, but the user wants the same to make a 
+		   dump of the application context"""
+
+		type, value, tb = sys.exc_info()
+		self.__exceptHook(type, value, tb) #We force the creation of crash
+										   #dump with this call
 	
 	def getInfoText(self):
 		assert self.__initialized, "PyCrash.__init__() not called"
@@ -230,10 +264,15 @@ Please send it to """ + self._SendTo
 		    of application """
 		pass #User-defined actions
 	
+	def printErrorMessage(self, exception, message):
+		assert self.__initialized, "PyCrash.__init__() not called"
+		
+		#TODO: this function should print something of more useful
+		print exception, message
+	
 	def saveToFile(self, filename):
 		""" Save the crash dump file in a given 'filename' directory """
 		assert self.__initialized, "PyCrash.__init__() not called"
-		
 		
 		self.__fileName = filename
 		
@@ -249,8 +288,8 @@ Please send it to """ + self._SendTo
 		strXML = "<?xml version=\"1.0\" encoding=\"iso-8859-1\"?>\n"
 		strXML += "<!--" + self.getInfoText() + " -->\n"
 		strXML += "<PyCrash version=\"" + PYCRASH_VERSION + "\""
-		strXML += self.__getAppInfo() 
-		strXML += self.__getOSInfo()  
+		strXML += self.__getAppInfo()
+		strXML += self.__getOSInfo()
 		strXML += self.__getPythonInfo() + ">\n"
 		strXML += self.__getCustomRecords()
 

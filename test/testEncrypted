@@ -1,0 +1,7 @@
+#!/bin/sh
+
+PYTHONPATH=../:$PYTHONPATH
+export PYTHONPATH
+
+status=exec python ../utils/keygen.py
+status=exec python test-encrypted.py

@@ -1,3 +1,9 @@
+Version 0.4-pre2:
+	* Added forceDump() method to the PyCrash class to force creation of the crash dump
+	* Starting from this release the enable() method must be called to starting the exception tracing
+	* Added new pycrash.utils.Html.py which allows to generate crash dump in HTML format
+	* Added pycrash2html.py script which converts PyCrash crash dump files in HTML format
+
 Version 0.4-pre1:
 	* Added full support to new-style classes
 	* Added new pycrash.utils.Encrypt.py module which allows to encrypt crash dumps using RSA algorithm.

@@ -4,5 +4,4 @@ PYTHONPATH=../:$PYTHONPATH
 export PYTHONPATH
 
 status=exec python test.py
-status=exec python ../utils/keygen.py
-status=exec python test-encrypted.py
+status=exec python test-html.py

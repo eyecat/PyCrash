@@ -32,7 +32,7 @@ class BadKeyError(Exception):
 
 class EncryptedPyCrash(pycrash.PyCrash):
 	"""
-		This class allows users to encrypt generated crah dump.
+		This class allows users to encrypt generated crash dump.
 	"""
 
 	__initialized = 0
@@ -45,8 +45,17 @@ class EncryptedPyCrash(pycrash.PyCrash):
 
 	def encryptingProgress(self, percentage):
 		pass
-	
+
 	def getEncryptedCrashDump(self):
+		print """
+******
+
+\x1b[1;31mWarining\x1b[0m: getEncryptedCrashDump() method is deprecated. Starting from PyCrash-0.4 it will be no longer supported. Use instead getCrashDump() method
+
+******"""
+		return self.getCrashDump()
+
+	def getCrashDump(self):
 		"""
 			Returns the encrypted version of crash dump using public key specified with
 			setPubKeyFilename() method 
@@ -54,7 +63,7 @@ class EncryptedPyCrash(pycrash.PyCrash):
 		assert self.__initialized, "EncryptedPyCrash.__init__() not called"
 		assert self.__pubKey is not None, "No public key specified with setPubKeyFilenaname() method"
 
-		crashDump = self.getCrashDump()
+		crashDump = super(EncryptedPyCrash, self).getCrashDump()
 		if crashDump is None:
 			return None
 
@@ -81,7 +90,7 @@ class EncryptedPyCrash(pycrash.PyCrash):
 
 		if self.isCrashed():
 			fd = open(filename, "wb")
-			cPickle.dump(self.getEncryptedCrashDump(), fd)
+			cPickle.dump(self.getCrashDump(), fd)
 			fd.close()
 
 	def setPubKeyFilename(self, keyFilename):

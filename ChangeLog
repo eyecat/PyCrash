@@ -1,10 +1,44 @@
+2004-04-25  Carmine I.D. Noviello  <cnoviello@pycrash.org>
+	* pycrash/utils/Html.py: added this file that contains the new HTMLPyCrash class (and all related
+							 classes) used to generate dumps in HTML format
+	* utils/: added the new file 'pycrash2html.py' used to convert a PyCrash file from XML to HTML
+
+2004-04-24  Carmine I.D. Noviello  <cnoviello@pycrash.org>
+	* pycrash/stackframe.py: added a bug fix
+	  (class StackFrame.toXML): for some strange reason the instuction "delete attrKeys[0]", which
+								skip dumping of the first object attribute to avoid redundant info,
+								was disappeared. Now, this bug has been fixed.
+
+	* pycrash/pycrash.py: added two new methods: enable() and disable()
+	  (class PyCrash.__init__): now, by default, PyCrash doesn't enable automatically exception tracing.
+								User must call the enable() method to enable it, and can use the disable()
+								method to stop tracing in every moment. So, the hooking code has been
+								moved from __init__() to enable() method.
+
+2004-04-18  Carmine I.D. Noviello  <cnoviello@pycrash.org>
+	* pycrash/pycrash.py: added the new method forceDump()
+	  (class PyCrash): added the new method forceDump() to force the creation of the
+					   crash dump, if an exception is raised.
+
+	* pycrash/pycrash.py: added check for invalid exception traceback info
+	  (__exceptHook): now the method __exceptHook checks if the exception traceback
+									data is not 'None'
+
+2004-04-17  Carmine I.D. Noviello  <cnoviello@pycrash.org>
+	* pycrash/utils/Encrypt.py: now the getEncryptedCrashDump() method is deprecated. Its code has been
+							 	moved to the getCrashDump() method
+	  (class EncryptedPyCrash): overrided the getCrashDump() method, to give more polymorphic fashion
+								to the class
+	  (getEncryptedCrashDump):  this method is deprecated and its code has been moved to getCrashDump()
+								method
+
 2004-03-01  Carmine I.D. Noviello  <cnoviello@pycrash.org>
 	* test/: added the file test-encrypted.py wich tests the new utils.Encrypt.py module
 
 2004-02-28	Carmine I.D. Noviello  <cnoviello@pycrash.org>
 	* pycrash/utils: added this sub-dir that must contain all PyCrash related utilities
 
-	* pycrash/utils/Encrypt.py: added this file which contains the new EncryptedPyCrash (and all
+	* pycrash/utils/Encrypt.py: added this file which contains the new EncryptedPyCrash class (and all
 						  		related classes) used to encrypt crash dumps
 	
 	* utils/: added this subdir which contains 'keygen.py' and 'decrypt.py' used to generate
@@ -47,5 +81,3 @@
 	  (toXML): added subfunction isInstance() which check if a given veriable is an onject 
 			   instance 
 	  (getVarType): some change to the regular expression
-
-

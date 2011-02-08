@@ -138,8 +138,8 @@ class StackFrame(object):
 			strXML += " type=\"" + varType + "\">" + varValue
 			
 			if isInstance(var): #Add all object attributes
-				#print "Vero per: ", var
 				attrKeys = var.__dict__.keys()
+				del attrKeys[0] #Let's skip 1st element to avoid redundant info
 				for attr in attrKeys:
 					varType = getVarType(var.__dict__[attr])
 				
