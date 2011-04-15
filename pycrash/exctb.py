@@ -69,3 +69,5 @@ class ExceptionTraceBack(object):
 		strXML += "\t</exctb>\n"
 
 		return strXML
+	def getLocationTrace(self):
+		return ["%s:%d"%(f.getFileName(),f.getLineNumber()) for f in self.__stack]

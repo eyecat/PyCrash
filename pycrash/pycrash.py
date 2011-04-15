@@ -21,6 +21,7 @@
 
 import types, sys, os, string, atexit, time, threading
 import platform
+import hashlib
 from exctb import ExceptionTraceBack
 
 _DictType = types.DictType
@@ -281,7 +282,19 @@ Please send it to """ + self._SendTo
 			fd = open(filename, "w")
 			fd.write(self.getCrashDump())
 			fd.close()
-
+	def getBucketHash(self):
+		hashset = set()
+		for tb in self.__tbList:
+			m = hashlib.md5()
+			for l in tb.getLocationTrace():
+				m.update(l)
+				m.update('\n')
+			hashset.add(m.hexdigest())
+		ret = hashlib.md5()
+		for h in hashset:
+			ret.update(h)
+		return ret.hexdigest()
+			
 	def toXML(self):
 		""" Returns the XML rapresentation of the crash dump """
 		assert self.__initialized, "PyCrash.__init__() not called"
