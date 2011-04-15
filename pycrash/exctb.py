@@ -21,6 +21,7 @@
 
 import types
 from stackframe import StackFrame
+from xml.sax.saxutils import escape
 
 _TupleType = types.TupleType
 _TracebackType = types.TracebackType
@@ -58,9 +59,9 @@ class ExceptionTraceBack(object):
 
 	def toXML(self):
 		strXML = "\t<exctb thread=\""
-		strXML += str(self.__thread)
-		strXML += "\" exctype=\"" + str(self.__excInfo[0]) 
-		strXML += "\" value=\"" + str(self.__excInfo[1]) + "\">\n"
+		strXML += escape(str(self.__thread))
+		strXML += "\" exctype=\"" + escape(str(self.__excInfo[0])) 
+		strXML += "\" value=\"" + escape(str(self.__excInfo[1])) + "\">\n"
 
 		for stack in self.__stack:
 			strXML += stack.toXML()

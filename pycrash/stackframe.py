@@ -20,6 +20,7 @@
 # Boston, MA 02111-1307, USA.
 
 import types, string, re
+from xml.sax.saxutils import escape
 
 _InstanceType	= types.InstanceType
 _FrameType	= types.FrameType
@@ -108,11 +109,11 @@ class StackFrame(object):
 			return 0
  
 		#frame info
-		strXML = "\t\t<frame name=\"" + self.getFrameName() + "\""
-		strXML += " argcount=\"" + str(self.getArgCount()) + "\""
-		strXML += " size=\"" +  str(self.getStackSize()) + "\""
-		strXML += " filename=\"" + self.getFileName() + "\""
-		strXML += " line=\"" +  str(self.getLineNumber()) + "\">\n"
+		strXML = "\t\t<frame name=\"" + escape(self.getFrameName()) + "\""
+		strXML += " argcount=\"" + escape(str(self.getArgCount())) + "\""
+		strXML += " size=\"" +  escape(str(self.getStackSize())) + "\""
+		strXML += " filename=\"" + escape(self.getFileName()) + "\""
+		strXML += " line=\"" +  escape(str(self.getLineNumber())) + "\">\n"
 
 		#var info
 		#regex = re.compile("'[a-z]+'", re.IGNORECASE)
@@ -134,8 +135,8 @@ class StackFrame(object):
 				varValue = "(undefined)"
 				varType = "(undefined)"
 			
-			strXML += "\t\t\t<var name=\"" + item + "\""
-			strXML += " type=\"" + varType + "\">" + varValue
+			strXML += "\t\t\t<var name=\"" + escape(item) + "\""
+			strXML += " type=\"" + escape(varType) + "\">" + escape(varValue)
 			
 			if isInstance(var): #Add all object attributes
 				attrKeys = var.__dict__.keys()
@@ -144,12 +145,12 @@ class StackFrame(object):
 				for attr in attrKeys:
 					varType = getVarType(var.__dict__[attr])
 				
-					strXML += "\n\t\t\t\t<attr name=\"" + attr 
-					strXML += "\" type=\"" + varType + "\">"
+					strXML += "\n\t\t\t\t<attr name=\"" + escape(attr )
+					strXML += "\" type=\"" + escape(varType) + "\">"
 					attrValue =  str(var.__dict__[attr])
 					attrValue = _replace(attrValue, "<", "(")
 					attrValue = _replace(attrValue, ">", ")")
-					strXML += attrValue + "</attr>"
+					strXML += escape(attrValue) + "</attr>"
 				strXML += "\n\t\t\t</var>\n"
 			else:
 				strXML += "</var>\n"
