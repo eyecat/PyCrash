@@ -21,6 +21,7 @@
 
 import pycrash
 from xml.dom.minidom import parseString, parse
+from xml.parsers.expat import ExpatError
 import string, time
 
 _strftime = time.strftime
