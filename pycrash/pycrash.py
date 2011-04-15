@@ -20,6 +20,7 @@
 # Boston, MA 02111-1307, USA.
 
 import types, sys, os, string, atexit, time, threading
+import platform
 from exctb import ExceptionTraceBack
 
 _DictType = types.DictType
@@ -31,7 +32,7 @@ _exc_info = sys.exc_info
 if os.name == "posix":
 	_uname	= os.uname
 else:
-	_uname = lambda: "(unknown)"
+	_uname = platform.uname
 del os
 
 _StringLower = string.lower
