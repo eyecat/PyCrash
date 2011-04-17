@@ -285,11 +285,7 @@ Please send it to """ + self._SendTo
 	def getBucketHash(self):
 		hashset = set()
 		for tb in self.__tbList:
-			m = hashlib.md5()
-			for l in tb.getLocationTrace():
-				m.update(l)
-				m.update('\n')
-			hashset.add(m.hexdigest())
+			hashset.add(tb.getTBHash())
 		ret = hashlib.md5()
 		for h in hashset:
 			ret.update(h)

@@ -20,6 +20,7 @@
 # Boston, MA 02111-1307, USA.
 
 import types
+import hashlib
 from stackframe import StackFrame
 from xml.sax.saxutils import escape
 
@@ -71,3 +72,14 @@ class ExceptionTraceBack(object):
 		return strXML
 	def getLocationTrace(self):
 		return ["%s:%d"%(f.getFileName(),f.getLineNumber()) for f in self.__stack]
+	def getTBHash(self):
+		m = hashlib.md5()
+		m.update(str(self.__excInfo[0]))
+		m.update(str(self.__excInfo[1])[:20])#ODBC driver will include too much variable details in exception value.
+		for f in self.__stack:
+			m.update('\n')
+			m.update(f.getFileName())
+			m.update(':')
+			m.update(f.getLineNumber())
+		return m.hexdigest()
+		
