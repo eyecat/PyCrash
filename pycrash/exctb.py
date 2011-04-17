@@ -80,6 +80,6 @@ class ExceptionTraceBack(object):
 			m.update('\n')
 			m.update(f.getFileName())
 			m.update(':')
-			m.update(f.getLineNumber())
+			m.update(str(f.getLineNumber()))
 		return m.hexdigest()
 		
